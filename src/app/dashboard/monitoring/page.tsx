@@ -377,16 +377,24 @@ export default async function MonitoringPage({ searchParams }: MonitoringPagePro
                 Export CSV
               </button>
             )}
-            <button
-              type="button"
-              data-capability="monitoring-detailed-analytics"
-              disabled={!detailedAnalyticsEnabled}
-              className={`rounded-xl bg-[#dcebf3] px-4 py-2 text-sm font-semibold text-[#0a6f87] ${
-                detailedAnalyticsEnabled ? "" : "cursor-not-allowed opacity-55"
-              }`}
-            >
-              View Detailed Analytics
-            </button>
+            {detailedAnalyticsEnabled ? (
+              <Link
+                href="/dashboard/monitoring/analytics"
+                data-capability="monitoring-detailed-analytics"
+                className="rounded-xl bg-[#dcebf3] px-4 py-2 text-sm font-semibold text-[#0a6f87] hover:bg-[#cfe3ed]"
+              >
+                View Detailed Analytics
+              </Link>
+            ) : (
+              <button
+                type="button"
+                data-capability="monitoring-detailed-analytics"
+                disabled
+                className="cursor-not-allowed rounded-xl bg-[#dcebf3] px-4 py-2 text-sm font-semibold text-[#0a6f87] opacity-55"
+              >
+                View Detailed Analytics
+              </button>
+            )}
             {!exportCsvEnabled || !detailedAnalyticsEnabled ? (
               <CapabilityPill capabilityId="monitoring-export-csv" compact />
             ) : null}

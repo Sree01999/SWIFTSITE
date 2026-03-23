@@ -117,9 +117,12 @@
       "title": "Detailed analytics view",
       "area": "Monitoring",
       "scope": "post_mvp",
-      "status": "stub",
-      "uiRoutes": ["/dashboard/monitoring"],
-      "backendMappings": ["Not implemented"],
+      "status": "working",
+      "uiRoutes": ["/dashboard/monitoring", "/dashboard/monitoring/analytics"],
+      "backendMappings": [
+        "/dashboard/monitoring/analytics with range/status/project filters",
+        "deployment analytics aggregation from deployments table"
+      ],
       "uiRequired": true
     },
     {

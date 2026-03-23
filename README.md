@@ -49,6 +49,7 @@ pnpm dev
 - `/dashboard/projects` (list + create)
 - `/dashboard/projects/[id]` (deploy workflow + domains)
 - `/dashboard/monitoring` (overview + logs + CSV export)
+- `/dashboard/monitoring/analytics` (detailed analytics + filters)
 - `/dashboard/billing` (mock/live-ready checkout foundation)
 - `/dashboard/docs`
 - `/dashboard/support`
