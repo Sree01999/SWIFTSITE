@@ -37,18 +37,31 @@ export function BillingCheckoutPanel({ clients }: { clients: ClientOption[] }) {
     try {
       const res = await fetch("/api/billing/checkout", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ clientId, chargeType }),
       });
-      const data = (await res.json()) as {
+      const responseText = await res.text();
+      let data: {
         mode?: "mock" | "stripe";
         checkoutUrl?: string | null;
         message?: string;
         error?: string;
-      };
+      } = {};
+
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText) as typeof data;
+        } catch {
+          data = {};
+        }
+      }
 
       if (!res.ok) {
-        setError(data.error ?? "Checkout could not be started.");
+        const fallback = responseText?.trim()
+          ? responseText.slice(0, 180)
+          : "Checkout could not be started.";
+        setError(`HTTP ${res.status}: ${data.error ?? fallback}`);
         return;
       }
 

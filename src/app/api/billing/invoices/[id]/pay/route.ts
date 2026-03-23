@@ -7,24 +7,30 @@ export async function POST(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const { id } = await params;
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    const result = await markInvoicePaid({ supabase, invoiceId: id });
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.statusCode });
+    }
+
+    return NextResponse.json({
+      invoiceId: result.invoiceId,
+      alreadyPaid: result.alreadyPaid,
+      status: "paid",
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unexpected invoice payment error.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  const result = await markInvoicePaid({ supabase, invoiceId: id });
-  if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: result.statusCode });
-  }
-
-  return NextResponse.json({
-    invoiceId: result.invoiceId,
-    alreadyPaid: result.alreadyPaid,
-    status: "paid",
-  });
 }

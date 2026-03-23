@@ -102,7 +102,20 @@ function buildUptimeTrend(
   });
 }
 
-export default async function MonitoringPage() {
+type MonitoringPageProps = {
+  searchParams?: Promise<{ logsPage?: string | string[] }>;
+};
+
+export default async function MonitoringPage({ searchParams }: MonitoringPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const rawLogsPage = Array.isArray(resolvedSearchParams.logsPage)
+    ? resolvedSearchParams.logsPage[0]
+    : resolvedSearchParams.logsPage;
+  const parsedLogsPage = Number.parseInt(rawLogsPage ?? "1", 10);
+  const logsPage = Number.isFinite(parsedLogsPage)
+    ? Math.max(1, Math.min(20, parsedLogsPage))
+    : 1;
+
   const supabase = await createClient();
   const [
     { count: projectCount },
@@ -116,7 +129,7 @@ export default async function MonitoringPage() {
       .from("deployments")
       .select("id,project_id,status,created_at,error_message")
       .order("created_at", { ascending: false })
-      .limit(160),
+      .limit(320),
     supabase.from("projects").select("id,name,slug"),
   ]);
 
@@ -153,10 +166,18 @@ export default async function MonitoringPage() {
     })
     .join(" ");
 
-  const recentLogs = deployments.slice(0, 4).map((deployment, index) => {
+  const logsPerPage = 4;
+  const logsLimit = logsPage * logsPerPage;
+  const hasMoreLogs = deployments.length > logsLimit;
+  const recentLogs = deployments.slice(0, logsLimit).map((deployment, index) => {
     const project = projectById.get(deployment.project_id);
     const severity = severityFromStatus(deployment.status);
-    const sourcePrefix = ["edge-runtime", "auth-service", "db-cluster", "billing-webhooks"];
+    const sourcePrefix = [
+      "edge-runtime",
+      "auth-service",
+      "db-cluster",
+      "billing-webhooks",
+    ];
     const source = `${sourcePrefix[index % sourcePrefix.length]}-${
       project?.slug?.slice(0, 8) ?? deployment.id.slice(0, 8)
     }`;
@@ -224,15 +245,15 @@ export default async function MonitoringPage() {
       <section className="grid gap-4 xl:grid-cols-4">
         <article className="rounded-3xl border border-slate-200 bg-white px-5 py-5">
           <div className="flex items-center justify-between">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3f7] text-[#0a6f87]">
-              ⛁
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3f7] text-sm font-semibold text-[#0a6f87]">
+              DB
             </span>
             <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
               Healthy
             </span>
           </div>
           <h3 className="mt-4 text-3xl font-semibold text-slate-800">Supabase DB</h3>
-          <p className="text-sm text-slate-500">PostgreSQL Cluster · us-east-1</p>
+          <p className="text-sm text-slate-500">PostgreSQL Cluster - us-east-1</p>
           <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <p className="text-slate-500">
               Latency
@@ -249,15 +270,15 @@ export default async function MonitoringPage() {
 
         <article className="rounded-3xl border border-slate-200 bg-white px-5 py-5">
           <div className="flex items-center justify-between">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3f7] text-[#0a6f87]">
-              ⚡
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3f7] text-sm font-semibold text-[#0a6f87]">
+              EF
             </span>
             <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
               Healthy
             </span>
           </div>
           <h3 className="mt-4 text-3xl font-semibold text-slate-800">Edge Functions</h3>
-          <p className="text-sm text-slate-500">V8 Isolation · Worldwide</p>
+          <p className="text-sm text-slate-500">V8 Isolation - Worldwide</p>
           <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <p className="text-slate-500">
               Executions
@@ -276,8 +297,8 @@ export default async function MonitoringPage() {
 
         <article className="rounded-3xl border border-slate-200 bg-white px-5 py-5">
           <div className="flex items-center justify-between">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3f7] text-[#0a6f87]">
-              ◫
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3f7] text-sm font-semibold text-[#0a6f87]">
+              CI
             </span>
             <span className="rounded-full bg-[#dbe8ff] px-3 py-1 text-xs font-semibold text-[#32508a]">
               Building
@@ -286,7 +307,7 @@ export default async function MonitoringPage() {
           <h3 className="mt-4 text-3xl font-semibold text-slate-800">
             Deployment Engine
           </h3>
-          <p className="text-sm text-slate-500">CI/CD Pipeline · Global</p>
+          <p className="text-sm text-slate-500">CI/CD Pipeline - Global</p>
           <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <p className="text-slate-500">
               Active
@@ -303,15 +324,15 @@ export default async function MonitoringPage() {
 
         <article className="rounded-3xl border border-slate-200 bg-white px-5 py-5">
           <div className="flex items-center justify-between">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3f7] text-[#0a6f87]">
-              ▣
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3f7] text-sm font-semibold text-[#0a6f87]">
+              BI
             </span>
             <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
               Healthy
             </span>
           </div>
           <h3 className="mt-4 text-3xl font-semibold text-slate-800">Billing API</h3>
-          <p className="text-sm text-slate-500">Stripe Connect · us-east</p>
+          <p className="text-sm text-slate-500">Stripe Connect - us-east</p>
           <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <p className="text-slate-500">
               Uptime
@@ -338,19 +359,31 @@ export default async function MonitoringPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              data-capability="monitoring-export-csv"
-              disabled={!exportCsvEnabled}
-              className={`rounded-xl bg-[#eef3f7] px-4 py-2 text-sm font-semibold text-slate-700 ${exportCsvEnabled ? "" : "cursor-not-allowed opacity-55"}`}
-            >
-              Export CSV
-            </button>
+            {exportCsvEnabled ? (
+              <Link
+                data-capability="monitoring-export-csv"
+                href="/api/monitoring/export?days=30"
+                className="rounded-xl bg-[#eef3f7] px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-[#e5edf3]"
+              >
+                Export CSV
+              </Link>
+            ) : (
+              <button
+                type="button"
+                data-capability="monitoring-export-csv"
+                disabled
+                className="cursor-not-allowed rounded-xl bg-[#eef3f7] px-4 py-2 text-sm font-semibold text-slate-700 opacity-55"
+              >
+                Export CSV
+              </button>
+            )}
             <button
               type="button"
               data-capability="monitoring-detailed-analytics"
               disabled={!detailedAnalyticsEnabled}
-              className={`rounded-xl bg-[#dcebf3] px-4 py-2 text-sm font-semibold text-[#0a6f87] ${detailedAnalyticsEnabled ? "" : "cursor-not-allowed opacity-55"}`}
+              className={`rounded-xl bg-[#dcebf3] px-4 py-2 text-sm font-semibold text-[#0a6f87] ${
+                detailedAnalyticsEnabled ? "" : "cursor-not-allowed opacity-55"
+              }`}
             >
               View Detailed Analytics
             </button>
@@ -410,8 +443,9 @@ export default async function MonitoringPage() {
       <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
         <div className="px-6 py-5">
           <h2 className="text-4xl font-semibold text-[#1f2f39]">System Logs</h2>
-          <p className="text-sm text-slate-500">
-            Real-time event streaming across nodes
+          <p className="text-sm text-slate-500">Real-time event streaming across nodes</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Showing {recentLogs.length} of {deployments.length} recent events
           </p>
         </div>
         <table className="min-w-full">
@@ -428,9 +462,7 @@ export default async function MonitoringPage() {
             {recentLogs.map((log) => (
               <tr key={log.id} className="border-t border-slate-200 text-base">
                 <td className="px-6 py-5 text-slate-700">{log.timestamp}</td>
-                <td className="px-6 py-5 font-semibold text-slate-800">
-                  {log.source}
-                </td>
+                <td className="px-6 py-5 font-semibold text-slate-800">{log.source}</td>
                 <td className="px-6 py-5 text-slate-700">{log.message}</td>
                 <td className="px-6 py-5">
                   <span
@@ -463,14 +495,24 @@ export default async function MonitoringPage() {
           </tbody>
         </table>
         <div className="border-t border-slate-200 px-6 py-4 text-center">
-          <button
-            type="button"
-            data-capability="monitoring-load-logs"
-            disabled={!loadLogsEnabled}
-            className={`text-sm font-medium text-slate-600 ${loadLogsEnabled ? "hover:text-slate-800" : "cursor-not-allowed opacity-55"}`}
-          >
-            Load previous logs ˅
-          </button>
+          {loadLogsEnabled && hasMoreLogs ? (
+            <Link
+              href={`/dashboard/monitoring?logsPage=${logsPage + 1}`}
+              data-capability="monitoring-load-logs"
+              className="text-sm font-medium text-slate-600 hover:text-slate-800"
+            >
+              Load previous logs
+            </Link>
+          ) : (
+            <button
+              type="button"
+              data-capability="monitoring-load-logs"
+              disabled
+              className="cursor-not-allowed text-sm font-medium text-slate-600 opacity-55"
+            >
+              {hasMoreLogs ? "Load previous logs" : "No more logs"}
+            </button>
+          )}
           {!loadLogsEnabled ? (
             <div className="mt-2">
               <CapabilityPill capabilityId="monitoring-load-logs" compact />

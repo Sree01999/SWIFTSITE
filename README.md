@@ -46,9 +46,14 @@ pnpm dev
 - `/dashboard` (protected)
 - `/dashboard/capabilities` (live capability ledger)
 - `/dashboard/clients` (list + create client)
-- `/dashboard/projects` (placeholder)
-- `/dashboard/billing` (placeholder)
-- `/dashboard/settings` (placeholder)
+- `/dashboard/projects` (list + create)
+- `/dashboard/projects/[id]` (deploy workflow + domains)
+- `/dashboard/monitoring` (overview + logs + CSV export)
+- `/dashboard/billing` (mock/live-ready checkout foundation)
+- `/dashboard/docs`
+- `/dashboard/support`
+- `/dashboard/changelog`
+- `/dashboard/settings`
 
 ## Notes
 
@@ -58,6 +63,7 @@ pnpm dev
 - Keep all production secrets in Vercel environment variables, never in git.
 - Scope guard command: `pnpm scope:check`
 - Capability ledger docs: `docs/capability-ledger.md`
+- Pre-live cutover checklist: `docs/pre-live-cutover-checklist.md`
 
 ## Next Work Slice
 - Day 4: richer client detail views

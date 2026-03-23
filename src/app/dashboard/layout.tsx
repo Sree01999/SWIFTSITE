@@ -62,30 +62,60 @@ export default async function DashboardLayout({
             />
           </div>
           <div className="type-nav ml-8 hidden items-center gap-7 text-slate-600 lg:flex">
-            <button
-              type="button"
-              data-capability="nav-docs-link"
-              disabled={!docsEnabled}
-              className={`type-nav bg-transparent ${docsEnabled ? "hover:text-slate-800" : "cursor-not-allowed opacity-55"}`}
-            >
-              Docs
-            </button>
-            <button
-              type="button"
-              data-capability="nav-support-link"
-              disabled={!supportEnabled}
-              className={`type-nav bg-transparent ${supportEnabled ? "hover:text-slate-800" : "cursor-not-allowed opacity-55"}`}
-            >
-              Support
-            </button>
-            <button
-              type="button"
-              data-capability="nav-changelog-link"
-              disabled={!changelogEnabled}
-              className={`type-nav bg-transparent ${changelogEnabled ? "hover:text-slate-800" : "cursor-not-allowed opacity-55"}`}
-            >
-              Changelog
-            </button>
+            {docsEnabled ? (
+              <Link
+                href="/dashboard/docs"
+                data-capability="nav-docs-link"
+                className="type-nav bg-transparent hover:text-slate-800"
+              >
+                Docs
+              </Link>
+            ) : (
+              <button
+                type="button"
+                data-capability="nav-docs-link"
+                disabled
+                className="type-nav cursor-not-allowed bg-transparent opacity-55"
+              >
+                Docs
+              </button>
+            )}
+            {supportEnabled ? (
+              <Link
+                href="/dashboard/support"
+                data-capability="nav-support-link"
+                className="type-nav bg-transparent hover:text-slate-800"
+              >
+                Support
+              </Link>
+            ) : (
+              <button
+                type="button"
+                data-capability="nav-support-link"
+                disabled
+                className="type-nav cursor-not-allowed bg-transparent opacity-55"
+              >
+                Support
+              </button>
+            )}
+            {changelogEnabled ? (
+              <Link
+                href="/dashboard/changelog"
+                data-capability="nav-changelog-link"
+                className="type-nav bg-transparent hover:text-slate-800"
+              >
+                Changelog
+              </Link>
+            ) : (
+              <button
+                type="button"
+                data-capability="nav-changelog-link"
+                disabled
+                className="type-nav cursor-not-allowed bg-transparent opacity-55"
+              >
+                Changelog
+              </button>
+            )}
             {!docsEnabled || !supportEnabled || !changelogEnabled ? (
               <CapabilityPill capabilityId="nav-docs-link" compact />
             ) : null}

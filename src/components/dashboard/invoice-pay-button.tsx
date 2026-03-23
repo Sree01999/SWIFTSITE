@@ -13,23 +13,42 @@ export function InvoicePayButton({
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   async function markPaid() {
     setPending(true);
     setError(null);
+    setSuccess(null);
 
     try {
       const res = await fetch(`/api/billing/invoices/${invoiceId}/pay`, {
         method: "POST",
+        credentials: "include",
       });
-      const data = (await res.json()) as { error?: string };
+      const responseText = await res.text();
+      let data: { error?: string } = {};
+
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText) as { error?: string };
+        } catch {
+          data = {};
+        }
+      }
 
       if (!res.ok) {
-        setError(data.error ?? "Could not mark invoice as paid.");
+        const fallback = responseText?.trim()
+          ? responseText.slice(0, 180)
+          : "Could not mark invoice as paid.";
+        setError(`HTTP ${res.status}: ${data.error ?? fallback}`);
         return;
       }
 
+      setSuccess("Invoice marked paid. Refreshing...");
       router.refresh();
+      setTimeout(() => {
+        window.location.reload();
+      }, 250);
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -52,6 +71,7 @@ export function InvoicePayButton({
       >
         {pending ? "Marking..." : "Mark Paid (Dev)"}
       </button>
+      {success ? <p className="text-xs text-emerald-700">{success}</p> : null}
       {error ? <p className="text-xs text-red-700">{error}</p> : null}
     </div>
   );

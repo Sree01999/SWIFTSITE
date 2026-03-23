@@ -95,7 +95,7 @@
       "title": "Monitoring overview",
       "area": "Monitoring",
       "scope": "mvp",
-      "status": "partial",
+      "status": "working",
       "uiRoutes": ["/dashboard/monitoring"],
       "backendMappings": ["deployments aggregate queries", "derived metrics"],
       "uiRequired": false
@@ -106,9 +106,9 @@
       "title": "Export monitoring CSV",
       "area": "Monitoring",
       "scope": "post_mvp",
-      "status": "stub",
+      "status": "working",
       "uiRoutes": ["/dashboard/monitoring"],
-      "backendMappings": ["Not implemented"],
+      "backendMappings": ["GET /api/monitoring/export"],
       "uiRequired": true
     },
     {
@@ -128,9 +128,9 @@
       "title": "Load historical logs",
       "area": "Monitoring",
       "scope": "post_mvp",
-      "status": "stub",
+      "status": "working",
       "uiRoutes": ["/dashboard/monitoring"],
-      "backendMappings": ["Not implemented"],
+      "backendMappings": ["logsPage query pagination on /dashboard/monitoring"],
       "uiRequired": true
     },
     {
@@ -192,9 +192,9 @@
       "title": "Docs link",
       "area": "Navigation",
       "scope": "post_mvp",
-      "status": "stub",
+      "status": "working",
       "uiRoutes": ["/dashboard/*"],
-      "backendMappings": ["Not implemented"],
+      "backendMappings": ["/dashboard/docs"],
       "uiRequired": true
     },
     {
@@ -203,9 +203,9 @@
       "title": "Support link",
       "area": "Navigation",
       "scope": "post_mvp",
-      "status": "stub",
+      "status": "working",
       "uiRoutes": ["/dashboard/*"],
-      "backendMappings": ["Not implemented"],
+      "backendMappings": ["/dashboard/support"],
       "uiRequired": true
     },
     {
@@ -214,9 +214,9 @@
       "title": "Changelog link",
       "area": "Navigation",
       "scope": "post_mvp",
-      "status": "stub",
+      "status": "working",
       "uiRoutes": ["/dashboard/*"],
-      "backendMappings": ["Not implemented"],
+      "backendMappings": ["/dashboard/changelog"],
       "uiRequired": true
     }
   ]
