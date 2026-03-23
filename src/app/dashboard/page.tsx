@@ -311,22 +311,42 @@ export default async function DashboardPage() {
               the closest edge node to your users.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-4">
-              <button
-                type="button"
-                data-capability="dashboard-explore-api"
-                disabled={!exploreApiEnabled}
-                className={`rounded-full bg-[#1e2d38] px-6 py-3 text-base font-semibold text-white ${exploreApiEnabled ? "" : "cursor-not-allowed opacity-55"}`}
-              >
-                Explore API
-              </button>
-              <button
-                type="button"
-                data-capability="dashboard-view-samples"
-                disabled={!viewSamplesEnabled}
-                className={`text-base font-semibold text-[#1e2d38] ${viewSamplesEnabled ? "hover:underline" : "cursor-not-allowed opacity-55"}`}
-              >
-                View Samples
-              </button>
+              {exploreApiEnabled ? (
+                <Link
+                  href="/dashboard/api"
+                  data-capability="dashboard-explore-api"
+                  className="rounded-full bg-[#1e2d38] px-6 py-3 text-base font-semibold text-white hover:bg-[#16222a]"
+                >
+                  Explore API
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  data-capability="dashboard-explore-api"
+                  disabled
+                  className="cursor-not-allowed rounded-full bg-[#1e2d38] px-6 py-3 text-base font-semibold text-white opacity-55"
+                >
+                  Explore API
+                </button>
+              )}
+              {viewSamplesEnabled ? (
+                <Link
+                  href="/dashboard/samples"
+                  data-capability="dashboard-view-samples"
+                  className="text-base font-semibold text-[#1e2d38] hover:underline"
+                >
+                  View Samples
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  data-capability="dashboard-view-samples"
+                  disabled
+                  className="cursor-not-allowed text-base font-semibold text-[#1e2d38] opacity-55"
+                >
+                  View Samples
+                </button>
+              )}
               {!exploreApiEnabled || !viewSamplesEnabled ? (
                 <CapabilityPill capabilityId="dashboard-explore-api" compact />
               ) : null}

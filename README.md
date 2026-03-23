@@ -51,6 +51,8 @@ pnpm dev
 - `/dashboard/monitoring` (overview + logs + CSV export)
 - `/dashboard/monitoring/analytics` (detailed analytics + filters)
 - `/dashboard/billing` (mock/live-ready checkout foundation)
+- `/dashboard/api` (operator API guide)
+- `/dashboard/samples` (workflow sample playbooks)
 - `/dashboard/docs`
 - `/dashboard/support`
 - `/dashboard/changelog`

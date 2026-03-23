@@ -142,9 +142,9 @@
       "title": "Explore API CTA",
       "area": "Dashboard",
       "scope": "post_mvp",
-      "status": "stub",
-      "uiRoutes": ["/dashboard"],
-      "backendMappings": ["Not implemented"],
+      "status": "working",
+      "uiRoutes": ["/dashboard", "/dashboard/api"],
+      "backendMappings": ["/dashboard/api"],
       "uiRequired": true
     },
     {
@@ -153,9 +153,9 @@
       "title": "View samples CTA",
       "area": "Dashboard",
       "scope": "post_mvp",
-      "status": "stub",
-      "uiRoutes": ["/dashboard"],
-      "backendMappings": ["Not implemented"],
+      "status": "working",
+      "uiRoutes": ["/dashboard", "/dashboard/samples"],
+      "backendMappings": ["/dashboard/samples"],
       "uiRequired": true
     },
     {
