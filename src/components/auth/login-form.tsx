@@ -68,6 +68,7 @@ export function LoginForm() {
 
       <button
         type="submit"
+        data-capability="auth-login"
         disabled={isPending}
         className="btn-primary disabled:opacity-60"
       >

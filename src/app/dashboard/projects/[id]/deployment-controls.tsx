@@ -206,6 +206,7 @@ export function DeploymentControls({
     <div className={styles.controlsWrap}>
       <button
         type="button"
+        data-capability="deploy-trigger"
         className={styles.quickDeployBtn}
         onClick={runDeploy}
         disabled={isBusy}
@@ -216,6 +217,7 @@ export function DeploymentControls({
       <div className={styles.quickButtons}>
         <button
           type="button"
+          data-capability="deploy-abort"
           className={styles.quickBtn}
           onClick={runAbort}
           disabled={disableAbort}
@@ -225,6 +227,7 @@ export function DeploymentControls({
         </button>
         <button
           type="button"
+          data-capability="deploy-restart"
           className={styles.quickBtn}
           onClick={runRestart}
           disabled={isBusy}

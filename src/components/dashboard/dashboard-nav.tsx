@@ -4,11 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: "▦" },
-  { href: "/dashboard/clients", label: "Clients", icon: "◉" },
-  { href: "/dashboard/projects", label: "Deployments", icon: "✦" },
-  { href: "/dashboard/monitoring", label: "Monitoring", icon: "▣" },
-  { href: "/dashboard/settings", label: "Settings", icon: "⚙" },
+  { href: "/dashboard", label: "Dashboard", icon: "[]" },
+  { href: "/dashboard/clients", label: "Clients", icon: "C" },
+  { href: "/dashboard/projects", label: "Deployments", icon: "D" },
+  { href: "/dashboard/monitoring", label: "Monitoring", icon: "M" },
+  { href: "/dashboard/capabilities", label: "Capabilities", icon: "=" },
+  { href: "/dashboard/settings", label: "Settings", icon: "S" }
 ];
 
 export function DashboardNav() {
@@ -32,9 +33,7 @@ export function DashboardNav() {
                 : "text-slate-500 hover:bg-white/70 hover:text-slate-700"
             }`}
           >
-            <span className="w-5 text-center opacity-85">
-              {item.icon ?? "•"}
-            </span>
+            <span className="w-5 text-center opacity-85">{item.icon}</span>
             <span>{item.label}</span>
           </Link>
         );
@@ -42,4 +41,3 @@ export function DashboardNav() {
     </nav>
   );
 }
-

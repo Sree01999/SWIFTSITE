@@ -44,6 +44,7 @@ pnpm dev
 - `/auth/login`
 - `/auth/register`
 - `/dashboard` (protected)
+- `/dashboard/capabilities` (live capability ledger)
 - `/dashboard/clients` (list + create client)
 - `/dashboard/projects` (placeholder)
 - `/dashboard/billing` (placeholder)
@@ -55,6 +56,8 @@ pnpm dev
 - Payment integration (`Stripe checkout`, webhook, subscriptions) is deferred by request.
 - Domain can remain temporary/test until professional domain cutover.
 - Keep all production secrets in Vercel environment variables, never in git.
+- Scope guard command: `pnpm scope:check`
+- Capability ledger docs: `docs/capability-ledger.md`
 
 ## Next Work Slice
 - Day 4: richer client detail views

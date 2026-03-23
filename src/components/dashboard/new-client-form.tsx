@@ -51,6 +51,7 @@ export function NewClientForm() {
 
       <button
         type="submit"
+        data-capability="clients-create"
         disabled={isPending}
         className="rounded-xl bg-[#0a6f87] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#095f73] disabled:opacity-60"
       >

@@ -336,6 +336,208 @@
   padding: 20px;
 }
 
+.domainsCard {
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #dce5ec;
+  padding: 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.domainCreateRow {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr auto;
+}
+
+.domainInput {
+  border: 1px solid #d4dee7;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #1f2c39;
+  background: #f8fafc;
+  font-size: var(--type-secondary-size);
+  font-weight: var(--type-regular);
+  line-height: var(--lh-body);
+}
+
+.domainAddBtn {
+  border: 1px solid #0c667e;
+  border-radius: 12px;
+  background: #0a6f87;
+  color: #ffffff;
+  padding: 10px 14px;
+  font-size: var(--type-button-size);
+  font-weight: var(--type-medium);
+  line-height: var(--lh-button);
+}
+
+.domainAddBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.domainList {
+  display: grid;
+  gap: 10px;
+}
+
+.domainItem {
+  border: 1px solid #e4ecf2;
+  background: #f7fafd;
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.domainName {
+  color: #183042;
+  font-size: var(--type-body-size);
+  font-weight: var(--type-medium);
+  line-height: var(--lh-body);
+}
+
+.domainMeta {
+  color: #607284;
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-regular);
+  line-height: var(--lh-body);
+}
+
+.domainMetaStrong {
+  color: #40596b;
+  font-size: var(--type-label-size);
+  font-weight: var(--type-medium);
+  line-height: var(--lh-body);
+}
+
+.domainBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.domainBadge {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-medium);
+  line-height: var(--lh-body);
+}
+
+.domainStatusPending {
+  background: #e5eaf0;
+  color: #566a7d;
+}
+
+.domainStatusVerified {
+  background: #d1f4df;
+  color: #0c8a46;
+}
+
+.domainStatusFailed {
+  background: #ffe2de;
+  color: #bf3d30;
+}
+
+.domainActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.domainActionBtn {
+  border: 1px solid #d5dfe7;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1f4f62;
+  padding: 6px 10px;
+  font-size: var(--type-button-size);
+  font-weight: var(--type-medium);
+  line-height: var(--lh-button);
+}
+
+.domainActionBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.domainEmpty {
+  color: #6a7d8f;
+  font-size: var(--type-secondary-size);
+  font-weight: var(--type-regular);
+  line-height: var(--lh-body);
+}
+
+.domainDnsPanel {
+  border: 1px solid #dce6ee;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.domainDnsRow {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto 1fr 1fr auto;
+  align-items: center;
+}
+
+.domainDnsType {
+  color: #5b7183;
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-medium);
+  line-height: var(--lh-body);
+}
+
+.domainDnsHost {
+  color: #1f4054;
+  background: #edf3f8;
+  border-radius: 8px;
+  padding: 3px 6px;
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-medium);
+  line-height: var(--lh-body);
+}
+
+.domainDnsValue {
+  color: #39556a;
+  background: #f3f7fb;
+  border-radius: 8px;
+  padding: 3px 6px;
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-regular);
+  line-height: var(--lh-body);
+  word-break: break-all;
+}
+
+.domainDnsState {
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-medium);
+  line-height: var(--lh-body);
+}
+
+.domainDnsOk {
+  background: #d1f4df;
+  color: #0c8a46;
+}
+
+.domainDnsBad {
+  background: #ffe2de;
+  color: #bf3d30;
+}
+
+.domainDnsPending {
+  background: #e5eaf0;
+  color: #566a7d;
+}
+
 .quickTitle {
   color: #0b5f74;
   font-size: var(--type-h3-size);
@@ -449,5 +651,10 @@
 
   .title {
     font-size: var(--type-h2-size);
+  }
+
+  .domainDnsRow {
+    grid-template-columns: 1fr;
+    align-items: start;
   }
 }

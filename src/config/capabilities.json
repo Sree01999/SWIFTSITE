@@ -1,0 +1,223 @@
+{
+  "version": "2026-03-23",
+  "capabilities": [
+    {
+      "id": "auth-login",
+      "requirementId": "REQ-AUTH-001",
+      "title": "Operator login",
+      "area": "Authentication",
+      "scope": "mvp",
+      "status": "working",
+      "uiRoutes": ["/auth/login"],
+      "backendMappings": ["supabase.auth.signInWithPassword"],
+      "uiRequired": true
+    },
+    {
+      "id": "auth-register",
+      "requirementId": "REQ-AUTH-002",
+      "title": "Operator registration",
+      "area": "Authentication",
+      "scope": "mvp",
+      "status": "working",
+      "uiRoutes": ["/auth/register"],
+      "backendMappings": ["supabase.auth.signUp", "profiles upsert on dashboard load"],
+      "uiRequired": true
+    },
+    {
+      "id": "auth-logout",
+      "requirementId": "REQ-AUTH-003",
+      "title": "Operator logout",
+      "area": "Authentication",
+      "scope": "mvp",
+      "status": "working",
+      "uiRoutes": ["/dashboard"],
+      "backendMappings": ["POST /api/auth/logout"],
+      "uiRequired": true
+    },
+    {
+      "id": "clients-create",
+      "requirementId": "REQ-CLIENT-001",
+      "title": "Create client",
+      "area": "Clients",
+      "scope": "mvp",
+      "status": "working",
+      "uiRoutes": ["/dashboard/clients"],
+      "backendMappings": ["createClientAction", "clients table"],
+      "uiRequired": true
+    },
+    {
+      "id": "projects-create",
+      "requirementId": "REQ-PROJ-001",
+      "title": "Create project",
+      "area": "Projects",
+      "scope": "mvp",
+      "status": "working",
+      "uiRoutes": ["/dashboard/projects"],
+      "backendMappings": ["createProjectAction", "projects table"],
+      "uiRequired": true
+    },
+    {
+      "id": "deploy-trigger",
+      "requirementId": "REQ-DEPLOY-001",
+      "title": "Manual deploy trigger",
+      "area": "Deployments",
+      "scope": "mvp",
+      "status": "working",
+      "uiRoutes": ["/dashboard/projects/[id]"],
+      "backendMappings": ["POST /api/deploy", "triggerDeploymentForProject"],
+      "uiRequired": true
+    },
+    {
+      "id": "deploy-abort",
+      "requirementId": "REQ-DEPLOY-002",
+      "title": "Abort deployment",
+      "area": "Deployments",
+      "scope": "mvp",
+      "status": "working",
+      "uiRoutes": ["/dashboard/projects/[id]"],
+      "backendMappings": ["POST /api/deploy/[id]/abort"],
+      "uiRequired": true
+    },
+    {
+      "id": "deploy-restart",
+      "requirementId": "REQ-DEPLOY-003",
+      "title": "Restart deployment",
+      "area": "Deployments",
+      "scope": "mvp",
+      "status": "working",
+      "uiRoutes": ["/dashboard/projects/[id]"],
+      "backendMappings": ["POST /api/deploy/[id]/restart"],
+      "uiRequired": true
+    },
+    {
+      "id": "monitoring-overview",
+      "requirementId": "REQ-MON-001",
+      "title": "Monitoring overview",
+      "area": "Monitoring",
+      "scope": "mvp",
+      "status": "partial",
+      "uiRoutes": ["/dashboard/monitoring"],
+      "backendMappings": ["deployments aggregate queries", "derived metrics"],
+      "uiRequired": false
+    },
+    {
+      "id": "monitoring-export-csv",
+      "requirementId": "REQ-MON-002",
+      "title": "Export monitoring CSV",
+      "area": "Monitoring",
+      "scope": "post_mvp",
+      "status": "stub",
+      "uiRoutes": ["/dashboard/monitoring"],
+      "backendMappings": ["Not implemented"],
+      "uiRequired": true
+    },
+    {
+      "id": "monitoring-detailed-analytics",
+      "requirementId": "REQ-MON-003",
+      "title": "Detailed analytics view",
+      "area": "Monitoring",
+      "scope": "post_mvp",
+      "status": "stub",
+      "uiRoutes": ["/dashboard/monitoring"],
+      "backendMappings": ["Not implemented"],
+      "uiRequired": true
+    },
+    {
+      "id": "monitoring-load-logs",
+      "requirementId": "REQ-MON-004",
+      "title": "Load historical logs",
+      "area": "Monitoring",
+      "scope": "post_mvp",
+      "status": "stub",
+      "uiRoutes": ["/dashboard/monitoring"],
+      "backendMappings": ["Not implemented"],
+      "uiRequired": true
+    },
+    {
+      "id": "dashboard-explore-api",
+      "requirementId": "REQ-DASH-001",
+      "title": "Explore API CTA",
+      "area": "Dashboard",
+      "scope": "post_mvp",
+      "status": "stub",
+      "uiRoutes": ["/dashboard"],
+      "backendMappings": ["Not implemented"],
+      "uiRequired": true
+    },
+    {
+      "id": "dashboard-view-samples",
+      "requirementId": "REQ-DASH-002",
+      "title": "View samples CTA",
+      "area": "Dashboard",
+      "scope": "post_mvp",
+      "status": "stub",
+      "uiRoutes": ["/dashboard"],
+      "backendMappings": ["Not implemented"],
+      "uiRequired": true
+    },
+    {
+      "id": "billing-checkout",
+      "requirementId": "REQ-BILL-001",
+      "title": "Stripe checkout and recurring subscription",
+      "area": "Billing",
+      "scope": "post_mvp",
+      "status": "partial",
+      "uiRoutes": ["/dashboard/billing"],
+      "backendMappings": [
+        "POST /api/billing/checkout",
+        "POST /api/billing/invoices/[id]/pay (mock/dev)",
+        "POST /api/stripe/webhook (idempotent event handling)"
+      ],
+      "uiRequired": true
+    },
+    {
+      "id": "domains-management",
+      "requirementId": "REQ-DOMAIN-001",
+      "title": "Domain add/verify/SSL status",
+      "area": "Domains",
+      "scope": "mvp",
+      "status": "working",
+      "uiRoutes": ["/dashboard/projects/[id]"],
+      "backendMappings": [
+        "POST /api/domains",
+        "POST /api/domains/[id]/dns-check",
+        "POST /api/domains/[id]/status",
+        "domains table with token-based DNS verification and SSL state transition"
+      ],
+      "uiRequired": true
+    },
+    {
+      "id": "nav-docs-link",
+      "requirementId": "REQ-DOCS-001",
+      "title": "Docs link",
+      "area": "Navigation",
+      "scope": "post_mvp",
+      "status": "stub",
+      "uiRoutes": ["/dashboard/*"],
+      "backendMappings": ["Not implemented"],
+      "uiRequired": true
+    },
+    {
+      "id": "nav-support-link",
+      "requirementId": "REQ-DOCS-002",
+      "title": "Support link",
+      "area": "Navigation",
+      "scope": "post_mvp",
+      "status": "stub",
+      "uiRoutes": ["/dashboard/*"],
+      "backendMappings": ["Not implemented"],
+      "uiRequired": true
+    },
+    {
+      "id": "nav-changelog-link",
+      "requirementId": "REQ-DOCS-003",
+      "title": "Changelog link",
+      "area": "Navigation",
+      "scope": "post_mvp",
+      "status": "stub",
+      "uiRoutes": ["/dashboard/*"],
+      "backendMappings": ["Not implemented"],
+      "uiRequired": true
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { CapabilityPill } from "@/components/capability/capability-pill";
+import { isCapabilityEnabled } from "@/lib/capabilities";
 import { createClient } from "@/lib/supabase/server";
 
 type ProjectRow = {
@@ -142,6 +144,8 @@ export default async function DashboardPage() {
     })
     .filter((row): row is NonNullable<typeof row> => !!row)
     .slice(0, 3);
+  const exploreApiEnabled = isCapabilityEnabled("dashboard-explore-api");
+  const viewSamplesEnabled = isCapabilityEnabled("dashboard-view-samples");
 
   return (
     <section className="space-y-8">
@@ -309,16 +313,23 @@ export default async function DashboardPage() {
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <button
                 type="button"
-                className="rounded-full bg-[#1e2d38] px-6 py-3 text-base font-semibold text-white"
+                data-capability="dashboard-explore-api"
+                disabled={!exploreApiEnabled}
+                className={`rounded-full bg-[#1e2d38] px-6 py-3 text-base font-semibold text-white ${exploreApiEnabled ? "" : "cursor-not-allowed opacity-55"}`}
               >
                 Explore API
               </button>
               <button
                 type="button"
-                className="text-base font-semibold text-[#1e2d38] hover:underline"
+                data-capability="dashboard-view-samples"
+                disabled={!viewSamplesEnabled}
+                className={`text-base font-semibold text-[#1e2d38] ${viewSamplesEnabled ? "hover:underline" : "cursor-not-allowed opacity-55"}`}
               >
                 View Samples
               </button>
+              {!exploreApiEnabled || !viewSamplesEnabled ? (
+                <CapabilityPill capabilityId="dashboard-explore-api" compact />
+              ) : null}
             </div>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white/70 p-4">

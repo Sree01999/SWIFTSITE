@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { CapabilityPill } from "@/components/capability/capability-pill";
+import { isCapabilityEnabled } from "@/lib/capabilities";
 import { createClient } from "@/lib/supabase/server";
 
 type DeploymentRow = {
@@ -179,6 +181,11 @@ export default async function MonitoringPage() {
   const supabaseLatencyMs = Math.round(10 + errorRate * 6);
   const cpuUsage = Math.max(8, Math.min(78, Math.round(12 + (projectCount ?? 0) * 2.2)));
   const executionCount = Math.max(12_000, deployments.length * 620);
+  const exportCsvEnabled = isCapabilityEnabled("monitoring-export-csv");
+  const detailedAnalyticsEnabled = isCapabilityEnabled(
+    "monitoring-detailed-analytics",
+  );
+  const loadLogsEnabled = isCapabilityEnabled("monitoring-load-logs");
 
   return (
     <section className="space-y-7">
@@ -333,16 +340,23 @@ export default async function MonitoringPage() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="rounded-xl bg-[#eef3f7] px-4 py-2 text-sm font-semibold text-slate-700"
+              data-capability="monitoring-export-csv"
+              disabled={!exportCsvEnabled}
+              className={`rounded-xl bg-[#eef3f7] px-4 py-2 text-sm font-semibold text-slate-700 ${exportCsvEnabled ? "" : "cursor-not-allowed opacity-55"}`}
             >
               Export CSV
             </button>
             <button
               type="button"
-              className="rounded-xl bg-[#dcebf3] px-4 py-2 text-sm font-semibold text-[#0a6f87]"
+              data-capability="monitoring-detailed-analytics"
+              disabled={!detailedAnalyticsEnabled}
+              className={`rounded-xl bg-[#dcebf3] px-4 py-2 text-sm font-semibold text-[#0a6f87] ${detailedAnalyticsEnabled ? "" : "cursor-not-allowed opacity-55"}`}
             >
               View Detailed Analytics
             </button>
+            {!exportCsvEnabled || !detailedAnalyticsEnabled ? (
+              <CapabilityPill capabilityId="monitoring-export-csv" compact />
+            ) : null}
           </div>
         </div>
 
@@ -451,10 +465,17 @@ export default async function MonitoringPage() {
         <div className="border-t border-slate-200 px-6 py-4 text-center">
           <button
             type="button"
-            className="text-sm font-medium text-slate-600 hover:text-slate-800"
+            data-capability="monitoring-load-logs"
+            disabled={!loadLogsEnabled}
+            className={`text-sm font-medium text-slate-600 ${loadLogsEnabled ? "hover:text-slate-800" : "cursor-not-allowed opacity-55"}`}
           >
             Load previous logs ˅
           </button>
+          {!loadLogsEnabled ? (
+            <div className="mt-2">
+              <CapabilityPill capabilityId="monitoring-load-logs" compact />
+            </div>
+          ) : null}
         </div>
       </section>
 

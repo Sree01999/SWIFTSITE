@@ -2,7 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { CapabilityPill } from "@/components/capability/capability-pill";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
+import { isCapabilityEnabled } from "@/lib/capabilities";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({
@@ -26,6 +28,9 @@ export default async function DashboardLayout({
 
   const orgLabel =
     (user.user_metadata?.full_name as string | undefined) ?? "Acme Corp";
+  const docsEnabled = isCapabilityEnabled("nav-docs-link");
+  const supportEnabled = isCapabilityEnabled("nav-support-link");
+  const changelogEnabled = isCapabilityEnabled("nav-changelog-link");
 
   return (
     <div className="mx-auto grid min-h-screen w-full max-w-[1700px] grid-cols-1 bg-[#f3f6f9] lg:grid-cols-[288px_1fr]">
@@ -57,15 +62,33 @@ export default async function DashboardLayout({
             />
           </div>
           <div className="type-nav ml-8 hidden items-center gap-7 text-slate-600 lg:flex">
-            <a className="type-nav hover:text-slate-800" href="#">
+            <button
+              type="button"
+              data-capability="nav-docs-link"
+              disabled={!docsEnabled}
+              className={`type-nav bg-transparent ${docsEnabled ? "hover:text-slate-800" : "cursor-not-allowed opacity-55"}`}
+            >
               Docs
-            </a>
-            <a className="type-nav hover:text-slate-800" href="#">
+            </button>
+            <button
+              type="button"
+              data-capability="nav-support-link"
+              disabled={!supportEnabled}
+              className={`type-nav bg-transparent ${supportEnabled ? "hover:text-slate-800" : "cursor-not-allowed opacity-55"}`}
+            >
               Support
-            </a>
-            <a className="type-nav hover:text-slate-800" href="#">
+            </button>
+            <button
+              type="button"
+              data-capability="nav-changelog-link"
+              disabled={!changelogEnabled}
+              className={`type-nav bg-transparent ${changelogEnabled ? "hover:text-slate-800" : "cursor-not-allowed opacity-55"}`}
+            >
               Changelog
-            </a>
+            </button>
+            {!docsEnabled || !supportEnabled || !changelogEnabled ? (
+              <CapabilityPill capabilityId="nav-docs-link" compact />
+            ) : null}
           </div>
           <div className="ml-8 flex items-center gap-4">
             <span className="text-slate-500">🔔</span>

@@ -22,6 +22,7 @@ export function SignOutButton({ className }: { className?: string }) {
   return (
     <button
       type="button"
+      data-capability="auth-logout"
       disabled={isPending}
       onClick={signOut}
       className={className ?? "btn-secondary text-sm disabled:opacity-60"}

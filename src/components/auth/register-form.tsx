@@ -84,6 +84,7 @@ export function RegisterForm() {
 
       <button
         type="submit"
+        data-capability="auth-register"
         disabled={isPending}
         className="btn-primary disabled:opacity-60"
       >

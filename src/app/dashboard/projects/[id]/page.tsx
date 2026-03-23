@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 import { DeploymentControls } from "./deployment-controls";
+import { DomainManager } from "./domain-manager";
 import styles from "./page.module.css";
 
 type ProjectRow = {
@@ -26,6 +27,32 @@ type DeploymentRow = {
   commit_sha: string | null;
   triggered_by: string | null;
   deploy_url: string | null;
+};
+
+type DomainRow = {
+  id: string;
+  domain: string;
+  status: "pending" | "verified" | "failed";
+  ssl_status: string;
+  verified_at: string | null;
+  created_at: string;
+  verification_token: string;
+  dns_check_passed: boolean;
+  last_dns_check_at: string | null;
+  dns_check_details: {
+    passed?: boolean;
+    checkedAt?: string;
+    summary?: string;
+    records?: Array<{
+      type: "TXT" | "CNAME" | "A";
+      host: string;
+      expected: string;
+      found: string[];
+      status: "matched" | "missing" | "mismatch";
+      required: boolean;
+      note?: string;
+    }>;
+  } | null;
 };
 
 function deriveBuildLabel(project: ProjectRow, deployment: DeploymentRow | null) {
@@ -192,14 +219,24 @@ export default async function DeploymentEnginePage({
 
   const project = projectData as ProjectRow;
 
-  const { data: deploymentRows } = await supabase
-    .from("deployments")
-    .select("id,status,error_message,created_at,commit_sha,triggered_by,deploy_url")
-    .eq("project_id", project.id)
-    .order("created_at", { ascending: false })
-    .limit(20);
+  const [{ data: deploymentRows }, { data: domainRows }] = await Promise.all([
+    supabase
+      .from("deployments")
+      .select("id,status,error_message,created_at,commit_sha,triggered_by,deploy_url")
+      .eq("project_id", project.id)
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("domains")
+      .select(
+        "id,domain,status,ssl_status,verified_at,created_at,verification_token,dns_check_passed,last_dns_check_at,dns_check_details",
+      )
+      .eq("project_id", project.id)
+      .order("created_at", { ascending: false }),
+  ]);
 
   const deployments = (deploymentRows ?? []) as DeploymentRow[];
+  const domains = (domainRows ?? []) as DomainRow[];
   const latestDeployment = deployments[0] ?? null;
   const startedText = getStartedText(latestDeployment?.created_at ?? project.updated_at);
   const buildLabel = deriveBuildLabel(project, latestDeployment);
@@ -376,6 +413,8 @@ export default async function DeploymentEnginePage({
             initialStatus={latestDeployment?.status ?? project.last_deploy_status}
           />
         </section>
+
+        <DomainManager projectId={project.id} initialDomains={domains} />
 
         <p className={styles.powered}>Powered by SwiftSite Engine v2.4</p>
       </aside>
