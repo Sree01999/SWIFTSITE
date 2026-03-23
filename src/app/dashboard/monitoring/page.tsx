@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CapabilityPill } from "@/components/capability/capability-pill";
+import { StateBanner } from "@/components/ui/state-banner";
 import { isCapabilityEnabled } from "@/lib/capabilities";
 import { createClient } from "@/lib/supabase/server";
 
@@ -118,10 +119,10 @@ export default async function MonitoringPage({ searchParams }: MonitoringPagePro
 
   const supabase = await createClient();
   const [
-    { count: projectCount },
-    { count: clientCount },
-    { data: deploymentsData },
-    { data: projectsData },
+    { count: projectCount, error: projectCountError },
+    { count: clientCount, error: clientCountError },
+    { data: deploymentsData, error: deploymentsError },
+    { data: projectsData, error: projectsError },
   ] = await Promise.all([
     supabase.from("projects").select("*", { count: "exact", head: true }),
     supabase.from("clients").select("*", { count: "exact", head: true }),
@@ -207,9 +208,24 @@ export default async function MonitoringPage({ searchParams }: MonitoringPagePro
     "monitoring-detailed-analytics",
   );
   const loadLogsEnabled = isCapabilityEnabled("monitoring-load-logs");
+  const monitoringDataIssues = [
+    projectCountError,
+    clientCountError,
+    deploymentsError,
+    projectsError,
+  ]
+    .filter(Boolean)
+    .map((error) => error?.message ?? "");
 
   return (
     <section className="space-y-7">
+      {monitoringDataIssues.length ? (
+        <StateBanner
+          variant="warning"
+          title="Monitoring data is partially unavailable"
+          message={monitoringDataIssues.join(" | ")}
+        />
+      ) : null}
       <section className="rounded-[2rem] bg-[#0a6f87] px-8 py-8 text-white shadow-[0_16px_30px_rgba(10,111,135,0.3)]">
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="max-w-4xl">

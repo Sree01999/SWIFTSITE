@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { StateBanner } from "@/components/ui/state-banner";
 import { createClient } from "@/lib/supabase/server";
 
 type DeploymentRow = {
@@ -94,7 +95,10 @@ export default async function MonitoringAnalyticsPage({
   const startIso = startDate.toISOString();
 
   const supabase = await createClient();
-  const [{ data: projectsData }, { data: deploymentsData }] = await Promise.all([
+  const [
+    { data: projectsData, error: projectsError },
+    { data: deploymentsData, error: deploymentsError },
+  ] = await Promise.all([
     supabase.from("projects").select("id,name,slug").order("name", { ascending: true }),
     supabase
       .from("deployments")
@@ -169,6 +173,15 @@ export default async function MonitoringAnalyticsPage({
           </p>
         </div>
       </header>
+      {projectsError || deploymentsError ? (
+        <StateBanner
+          variant="warning"
+          title="Analytics data is partially unavailable"
+          message={[projectsError?.message, deploymentsError?.message]
+            .filter(Boolean)
+            .join(" | ")}
+        />
+      ) : null}
 
       <form
         action="/dashboard/monitoring/analytics"

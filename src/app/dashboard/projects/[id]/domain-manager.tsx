@@ -43,6 +43,16 @@ type DomainRow = {
   dns_check_details: DnsCheckDetails | null;
 };
 
+async function readJsonSafely<T>(res: Response): Promise<T> {
+  const text = await res.text();
+  if (!text) return {} as T;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return { error: text.slice(0, 180) } as T;
+  }
+}
+
 function formatStatus(status: string) {
   if (status === "verified") return "Verified";
   if (status === "failed") return "Failed";
@@ -137,13 +147,13 @@ export function DomainManager({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectId, domain: domainInput }),
       });
-      const data = (await res.json()) as {
+      const data = await readJsonSafely<{
         domain?: DomainRow;
         error?: string;
-      };
+      }>(res);
 
       if (!res.ok || !data.domain) {
-        setError(data.error ?? "Could not add domain.");
+        setError(data.error ?? `Could not add domain (HTTP ${res.status}).`);
         return;
       }
 
@@ -169,13 +179,13 @@ export function DomainManager({
       const res = await fetch(`/api/domains/${domainId}/dns-check`, {
         method: "POST",
       });
-      const data = (await res.json()) as {
+      const data = await readJsonSafely<{
         domain?: DomainRow;
         error?: string;
-      };
+      }>(res);
 
       if (!res.ok || !data.domain) {
-        setError(data.error ?? "DNS check failed.");
+        setError(data.error ?? `DNS check failed (HTTP ${res.status}).`);
         return;
       }
 
@@ -208,13 +218,15 @@ export function DomainManager({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-      const data = (await res.json()) as {
+      const data = await readJsonSafely<{
         domain?: DomainRow;
         error?: string;
-      };
+      }>(res);
 
       if (!res.ok || !data.domain) {
-        setError(data.error ?? "Could not update domain status.");
+        setError(
+          data.error ?? `Could not update domain status (HTTP ${res.status}).`,
+        );
         return;
       }
 

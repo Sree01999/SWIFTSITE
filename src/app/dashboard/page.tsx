@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CapabilityPill } from "@/components/capability/capability-pill";
+import { StateBanner } from "@/components/ui/state-banner";
 import { isCapabilityEnabled } from "@/lib/capabilities";
 import { createClient } from "@/lib/supabase/server";
 
@@ -80,11 +81,11 @@ export default async function DashboardPage() {
   startOfMonth.setUTCHours(0, 0, 0, 0);
 
   const [
-    { count: projectCount },
-    { count: monthlyDeploymentCount },
-    { data: projectsData },
-    { data: recentDeploymentsData },
-    { data: healthDeploymentsData },
+    { count: projectCount, error: projectCountError },
+    { count: monthlyDeploymentCount, error: monthlyCountError },
+    { data: projectsData, error: projectsError },
+    { data: recentDeploymentsData, error: recentDeploymentsError },
+    { data: healthDeploymentsData, error: healthDeploymentsError },
   ] = await Promise.all([
     supabase.from("projects").select("*", { count: "exact", head: true }),
     supabase
@@ -146,6 +147,15 @@ export default async function DashboardPage() {
     .slice(0, 3);
   const exploreApiEnabled = isCapabilityEnabled("dashboard-explore-api");
   const viewSamplesEnabled = isCapabilityEnabled("dashboard-view-samples");
+  const dashboardDataIssues = [
+    projectCountError,
+    monthlyCountError,
+    projectsError,
+    recentDeploymentsError,
+    healthDeploymentsError,
+  ]
+    .filter(Boolean)
+    .map((error) => error?.message ?? "");
 
   return (
     <section className="space-y-8">
@@ -157,6 +167,13 @@ export default async function DashboardPage() {
           Real-time performance and system availability for your cluster.
         </p>
       </div>
+      {dashboardDataIssues.length ? (
+        <StateBanner
+          variant="warning"
+          title="Some dashboard metrics are unavailable"
+          message={dashboardDataIssues.join(" | ")}
+        />
+      ) : null}
 
       <div className="grid gap-4 xl:grid-cols-[1fr_1fr_1fr]">
         <article className="rounded-2xl border border-slate-200 bg-[#eff4f8] px-6 py-6">

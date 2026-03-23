@@ -1,4 +1,5 @@
 import { NewClientForm } from "@/components/dashboard/new-client-form";
+import { StateBanner } from "@/components/ui/state-banner";
 import { createClient } from "@/lib/supabase/server";
 
 type ClientRow = {
@@ -69,15 +70,18 @@ function statusStyles(label: string) {
 export default async function ClientsPage() {
   const supabase = await createClient();
 
-  const [{ data: clientsData, error }, { data: projectsData }, { data: deploymentsData }] =
-    await Promise.all([
-      supabase.from("clients").select("id,name,email,status").order("name", { ascending: true }),
-      supabase.from("projects").select("id,client_id"),
-      supabase
-        .from("deployments")
-        .select("id,project_id,status,created_at")
-        .order("created_at", { ascending: false }),
-    ]);
+  const [
+    { data: clientsData, error: clientsError },
+    { data: projectsData, error: projectsError },
+    { data: deploymentsData, error: deploymentsError },
+  ] = await Promise.all([
+    supabase.from("clients").select("id,name,email,status").order("name", { ascending: true }),
+    supabase.from("projects").select("id,client_id"),
+    supabase
+      .from("deployments")
+      .select("id,project_id,status,created_at")
+      .order("created_at", { ascending: false }),
+  ]);
 
   const clients = (clientsData ?? []) as ClientRow[];
   const projects = (projectsData ?? []) as ProjectRow[];
@@ -133,6 +137,15 @@ export default async function ClientsPage() {
           Add Client
         </a>
       </div>
+      {projectsError || deploymentsError ? (
+        <StateBanner
+          variant="warning"
+          title="Some client metrics may be partial"
+          message={[projectsError?.message, deploymentsError?.message]
+            .filter(Boolean)
+            .join(" | ")}
+        />
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-3">
         <article className="rounded-2xl border border-slate-200 bg-[#eff4f8] px-6 py-5">
@@ -214,17 +227,17 @@ export default async function ClientsPage() {
                 </tr>
               );
             })}
-            {!clients.length && !error ? (
+            {!clients.length && !clientsError ? (
               <tr>
                 <td className="px-8 py-10 text-slate-500" colSpan={5}>
                   No clients yet. Add your first client below.
                 </td>
               </tr>
             ) : null}
-            {error ? (
+            {clientsError ? (
               <tr>
                 <td className="px-8 py-10 text-red-700" colSpan={5}>
-                  {error.message}
+                  {clientsError.message}
                 </td>
               </tr>
             ) : null}

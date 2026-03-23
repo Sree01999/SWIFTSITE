@@ -26,6 +26,16 @@ type StatusResponse = {
   errorMessage?: string | null;
 };
 
+async function readJsonSafely<T>(res: Response): Promise<T> {
+  const text = await res.text();
+  if (!text) return {} as T;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return { error: text.slice(0, 180) } as T;
+  }
+}
+
 const ACTIVE_STATUSES = new Set(["queued", "building"]);
 
 function normalizeStatus(status: string | null) {
@@ -76,7 +86,7 @@ export function DeploymentControls({
       });
       if (!res.ok) return;
 
-      const data = (await res.json()) as StatusResponse;
+      const data = await readJsonSafely<StatusResponse>(res);
       const nextStatus = normalizeStatus(data.status);
       setStatus(nextStatus);
       setLastSyncAt(new Date());
@@ -113,9 +123,9 @@ export function DeploymentControls({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectId }),
       });
-      const data = (await res.json()) as DeployActionResponse;
+      const data = await readJsonSafely<DeployActionResponse>(res);
       if (!res.ok || !data.deploymentId) {
-        setError(data.error ?? "Deploy request failed.");
+        setError(data.error ?? `Deploy request failed (HTTP ${res.status}).`);
         return;
       }
 
@@ -148,9 +158,9 @@ export function DeploymentControls({
       const res = await fetch(`/api/deploy/${deploymentId}/restart`, {
         method: "POST",
       });
-      const data = (await res.json()) as RestartActionResponse;
+      const data = await readJsonSafely<RestartActionResponse>(res);
       if (!res.ok || !data.deploymentId) {
-        setError(data.error ?? "Restart failed.");
+        setError(data.error ?? `Restart failed (HTTP ${res.status}).`);
         return;
       }
 
@@ -181,9 +191,9 @@ export function DeploymentControls({
       const res = await fetch(`/api/deploy/${deploymentId}/abort`, {
         method: "POST",
       });
-      const data = (await res.json()) as DeployActionResponse;
+      const data = await readJsonSafely<DeployActionResponse>(res);
       if (!res.ok) {
-        setError(data.error ?? "Abort failed.");
+        setError(data.error ?? `Abort failed (HTTP ${res.status}).`);
         return;
       }
 

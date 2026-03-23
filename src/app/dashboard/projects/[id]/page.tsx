@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { StateBanner } from "@/components/ui/state-banner";
 import { createClient } from "@/lib/supabase/server";
 
 import { DeploymentControls } from "./deployment-controls";
@@ -219,7 +220,10 @@ export default async function DeploymentEnginePage({
 
   const project = projectData as ProjectRow;
 
-  const [{ data: deploymentRows }, { data: domainRows }] = await Promise.all([
+  const [
+    { data: deploymentRows, error: deploymentsError },
+    { data: domainRows, error: domainsError },
+  ] = await Promise.all([
     supabase
       .from("deployments")
       .select("id,status,error_message,created_at,commit_sha,triggered_by,deploy_url")
@@ -251,6 +255,15 @@ export default async function DeploymentEnginePage({
   return (
     <section className={styles.page}>
       <div className={styles.main}>
+        {deploymentsError || domainsError ? (
+          <StateBanner
+            variant="warning"
+            title="Some project details are unavailable"
+            message={[deploymentsError?.message, domainsError?.message]
+              .filter(Boolean)
+              .join(" | ")}
+          />
+        ) : null}
         <Link href="/dashboard/projects" className={styles.backLink}>
           <span>←</span> Back to Deployments
         </Link>

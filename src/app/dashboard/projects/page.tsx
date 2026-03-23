@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { NewProjectForm } from "@/components/dashboard/new-project-form";
+import { StateBanner } from "@/components/ui/state-banner";
 import { createClient } from "@/lib/supabase/server";
 
 type ClientOption = {
@@ -41,16 +42,18 @@ function statusClasses(status: string) {
 export default async function ProjectsPage() {
   const supabase = await createClient();
 
-  const [{ data: clientsData }, { data: projectsData, error: projectsError }] =
-    await Promise.all([
-      supabase.from("clients").select("id,name").order("name", { ascending: true }),
-      supabase
-        .from("projects")
-        .select(
-          "id,name,slug,status,tech_stack,last_deploy_status,created_at,client:clients(name)",
-        )
-        .order("created_at", { ascending: false }),
-    ]);
+  const [
+    { data: clientsData, error: clientsError },
+    { data: projectsData, error: projectsError },
+  ] = await Promise.all([
+    supabase.from("clients").select("id,name").order("name", { ascending: true }),
+    supabase
+      .from("projects")
+      .select(
+        "id,name,slug,status,tech_stack,last_deploy_status,created_at,client:clients(name)",
+      )
+      .order("created_at", { ascending: false }),
+  ]);
 
   const clients = (clientsData ?? []) as ClientOption[];
   const projects = ((projectsData ?? []) as ProjectRowRaw[]).map((project) => ({
@@ -82,6 +85,13 @@ export default async function ProjectsPage() {
           </p>
         </div>
       </div>
+      {clientsError ? (
+        <StateBanner
+          variant="warning"
+          title="Client list is unavailable"
+          message={`${clientsError.message} You can still review existing projects.`}
+        />
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-3">
         <article className="rounded-2xl border border-slate-200 bg-[#eff4f8] px-6 py-5">
