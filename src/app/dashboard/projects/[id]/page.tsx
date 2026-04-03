@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ProjectDeleteForm } from "@/components/dashboard/project-delete-form";
 import { StateBanner } from "@/components/ui/state-banner";
 import { createClient } from "@/lib/supabase/server";
 
@@ -428,6 +429,13 @@ export default async function DeploymentEnginePage({
         </section>
 
         <DomainManager projectId={project.id} initialDomains={domains} />
+
+        <ProjectDeleteForm
+          projectId={project.id}
+          projectName={project.name}
+          deploymentCount={deployments.length}
+          domainCount={domains.length}
+        />
 
         <p className={styles.powered}>Powered by SwiftSite Engine v2.4</p>
       </aside>

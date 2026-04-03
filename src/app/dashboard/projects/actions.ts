@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { PROJECT_STATUS_OPTIONS } from "@/app/dashboard/projects/constants";
@@ -25,6 +26,12 @@ const updateProjectSchema = z.object({
 
 const deleteProjectSchema = z.object({
   projectId: z.string().uuid(),
+  confirmProjectName: z.string().min(1).max(120),
+  confirmDeleteWord: z.string().min(1).max(20),
+  acknowledgeDelete: z.preprocess(
+    (value) => value === "on" || value === true || value === "true",
+    z.boolean(),
+  ),
 });
 
 function createProjectSlug(name: string) {
@@ -44,7 +51,7 @@ type ActionState = { error?: string; success?: boolean } | null;
 export async function createProjectAction(
   _prevState: ActionState,
   formData: FormData,
-) {
+): Promise<ActionState> {
   const parsed = createProjectSchema.safeParse({
     name: formData.get("name"),
     clientId: formData.get("clientId"),
@@ -91,7 +98,7 @@ export async function createProjectAction(
 export async function updateProjectAction(
   _prevState: ActionState,
   formData: FormData,
-) {
+): Promise<ActionState> {
   const parsed = updateProjectSchema.safeParse({
     projectId: formData.get("projectId"),
     status: formData.get("status"),
@@ -131,20 +138,55 @@ export async function updateProjectAction(
 export async function deleteProjectAction(
   _prevState: ActionState,
   formData: FormData,
-) {
+): Promise<ActionState> {
   const parsed = deleteProjectSchema.safeParse({
     projectId: formData.get("projectId"),
+    confirmProjectName: formData.get("confirmProjectName"),
+    confirmDeleteWord: formData.get("confirmDeleteWord"),
+    acknowledgeDelete: formData.get("acknowledgeDelete"),
   });
 
   if (!parsed.success) {
-    return { error: "Invalid project id." };
+    return { error: "Please complete all delete confirmations." };
   }
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Please log in again." };
+  }
+
+  const { data: project, error: projectError } = await supabase
+    .from("projects")
+    .select("id,name,owner_id")
+    .eq("id", parsed.data.projectId)
+    .eq("owner_id", user.id)
+    .maybeSingle();
+
+  if (projectError || !project) {
+    return { error: "Project not found." };
+  }
+
+  if (!parsed.data.acknowledgeDelete) {
+    return { error: "Please confirm the irreversible delete warning." };
+  }
+
+  if (parsed.data.confirmDeleteWord.trim().toUpperCase() !== "DELETE") {
+    return { error: 'Type "DELETE" to confirm permanent removal.' };
+  }
+
+  if (parsed.data.confirmProjectName.trim() !== project.name) {
+    return { error: "Project name does not match. Delete canceled." };
+  }
+
   const { error } = await supabase
     .from("projects")
     .delete()
-    .eq("id", parsed.data.projectId);
+    .eq("id", project.id)
+    .eq("owner_id", user.id);
 
   if (error) {
     return { error: error.message };
@@ -152,5 +194,5 @@ export async function deleteProjectAction(
 
   revalidatePath("/dashboard/projects");
   revalidatePath("/dashboard");
-  return { success: true };
+  redirect("/dashboard/projects");
 }
