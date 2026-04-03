@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 
+import { isDevFeatureEnabled } from "@/lib/security/env";
+
 export async function GET() {
+  if (!isDevFeatureEnabled()) {
+    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
+
   return NextResponse.json({
     ok: true,
     message:
@@ -9,6 +15,10 @@ export async function GET() {
 }
 
 export async function POST() {
+  if (!isDevFeatureEnabled()) {
+    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
+
   const id = crypto.randomUUID();
   const short = id.replace(/-/g, "").slice(0, 10);
 

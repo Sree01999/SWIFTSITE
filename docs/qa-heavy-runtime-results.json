@@ -1,9 +1,9 @@
 ﻿{
-    "baseUrl":  "http://localhost:3010",
-    "timestampUtc":  "2026-03-23T18:58:04.3392463Z",
+    "baseUrl":  "http://localhost:3000",
+    "timestampUtc":  "2026-04-03T16:45:30.3806384Z",
     "summary":  {
-                    "total":  36,
-                    "passed":  36,
+                    "total":  35,
+                    "passed":  35,
                     "failed":  0
                 },
     "results":  [
@@ -65,7 +65,7 @@
                         "actual":  "200",
                         "pass":  true,
                         "error":  null,
-                        "response":  "{\"id\":\"7790d061-b67a-45ee-8e7d-1c7c068c338e\",\"deploymentId\":\"7790d061-b67a-45ee-8e7d-1c7c068c338e\",\"url\":\"https://preview-7790d061b6.swift.local\"}"
+                        "response":  "{\"id\":\"771d504a-10f7-428f-a2b8-a2e621cdf2d2\",\"deploymentId\":\"771d504a-10f7-428f-a2b8-a2e621cdf2d2\",\"url\":\"https://preview-771d504a10.swift.local\"}"
                     },
                     {
                         "name":  "Auth login invalid payload rejected",
@@ -171,201 +171,191 @@
                         "name":  "Register valid user",
                         "method":  "POST",
                         "path":  "/api/auth/register",
-                        "expected":  "200/400",
-                        "actual":  "400",
+                        "expected":  "n/a",
+                        "actual":  "skipped",
                         "pass":  true,
-                        "error":  null,
-                        "response":  "{\"error\":\"email rate limit exceeded\"}"
+                        "error":  "Signup checks disabled by default (use -IncludeSignupChecks)",
+                        "response":  ""
                     },
                     {
                         "name":  "Login unconfirmed user rejected",
                         "method":  "POST",
                         "path":  "/api/auth/login",
-                        "expected":  "401",
-                        "actual":  "401",
-                        "pass":  true,
-                        "error":  null,
-                        "response":  "{\"error\":\"Invalid login credentials\"}"
-                    },
-                    {
-                        "name":  "Admin create confirmed QA user",
-                        "method":  "POST",
-                        "path":  "supabase/auth/v1/admin/users",
                         "expected":  "n/a",
                         "actual":  "skipped",
                         "pass":  true,
-                        "error":  "Admin user creation blocked: The remote server returned an error: (401) Unauthorized.",
+                        "error":  "Signup checks disabled by default (use -IncludeSignupChecks)",
                         "response":  ""
                     },
                     {
-                        "name":  "Login confirmed user",
+                        "name":  "Login QA operator user",
                         "method":  "POST",
                         "path":  "/api/auth/login",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "No confirmed QA user available",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "{\"user\":{\"id\":\"36ff8d59-067d-477a-a013-bda774efcf1c\",\"aud\":\"authenticated\",\"role\":\"authenticated\",\"email\":\"qa.operator.20260403113645@swiftsite.local\",\"email_confirmed_at\":\"2026-04"
                     },
                     {
                         "name":  "Dashboard accessible after auth",
                         "method":  "GET",
                         "path":  "/dashboard",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "\u003c!DOCTYPE html\u003e\u003chtml lang=\"en\" class=\"inter_ae456f1b-module__Xiorba__variable h-full antialiased\"\u003e\u003chead\u003e\u003cmeta charSet=\"utf-8\"/\u003e\u003cmeta name=\"viewport\" content=\"width=device-width, in"
                     },
                     {
                         "name":  "Projects page accessible after auth",
                         "method":  "GET",
                         "path":  "/dashboard/projects",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "\u003c!DOCTYPE html\u003e\u003chtml lang=\"en\" class=\"inter_ae456f1b-module__Xiorba__variable h-full antialiased\"\u003e\u003chead\u003e\u003cmeta charSet=\"utf-8\"/\u003e\u003cmeta name=\"viewport\" content=\"width=device-width, in"
                     },
                     {
                         "name":  "Billing page accessible after auth",
                         "method":  "GET",
                         "path":  "/dashboard/billing",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "\u003c!DOCTYPE html\u003e\u003chtml lang=\"en\" class=\"inter_ae456f1b-module__Xiorba__variable h-full antialiased\"\u003e\u003chead\u003e\u003cmeta charSet=\"utf-8\"/\u003e\u003cmeta name=\"viewport\" content=\"width=device-width, in"
                     },
                     {
                         "name":  "Monitoring page accessible after auth",
                         "method":  "GET",
                         "path":  "/dashboard/monitoring",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "\u003c!DOCTYPE html\u003e\u003chtml lang=\"en\" class=\"inter_ae456f1b-module__Xiorba__variable h-full antialiased\"\u003e\u003chead\u003e\u003cmeta charSet=\"utf-8\"/\u003e\u003cmeta name=\"viewport\" content=\"width=device-width, in"
                     },
                     {
                         "name":  "Analytics page accessible after auth",
                         "method":  "GET",
                         "path":  "/dashboard/monitoring/analytics",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "\u003c!DOCTYPE html\u003e\u003chtml lang=\"en\" class=\"inter_ae456f1b-module__Xiorba__variable h-full antialiased\"\u003e\u003chead\u003e\u003cmeta charSet=\"utf-8\"/\u003e\u003cmeta name=\"viewport\" content=\"width=device-width, in"
                     },
                     {
                         "name":  "API guide page accessible after auth",
                         "method":  "GET",
                         "path":  "/dashboard/api",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "\u003c!DOCTYPE html\u003e\u003chtml lang=\"en\" class=\"inter_ae456f1b-module__Xiorba__variable h-full antialiased\"\u003e\u003chead\u003e\u003cmeta charSet=\"utf-8\"/\u003e\u003cmeta name=\"viewport\" content=\"width=device-width, in"
                     },
                     {
                         "name":  "Samples page accessible after auth",
                         "method":  "GET",
                         "path":  "/dashboard/samples",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "\u003c!DOCTYPE html\u003e\u003chtml lang=\"en\" class=\"inter_ae456f1b-module__Xiorba__variable h-full antialiased\"\u003e\u003chead\u003e\u003cmeta charSet=\"utf-8\"/\u003e\u003cmeta name=\"viewport\" content=\"width=device-width, in"
                     },
                     {
                         "name":  "Deploy with unknown project returns not found",
                         "method":  "POST",
                         "path":  "/api/deploy",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "404",
+                        "actual":  "404",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "{\"error\":\"Project not found.\"}"
                     },
                     {
                         "name":  "Domain create with unknown project returns not found",
                         "method":  "POST",
                         "path":  "/api/domains",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "404",
+                        "actual":  "404",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "{\"error\":\"Project not found.\"}"
                     },
                     {
                         "name":  "Billing checkout unknown client returns not found",
                         "method":  "POST",
                         "path":  "/api/billing/checkout",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "404",
+                        "actual":  "404",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "{\"error\":\"Client not found.\"}"
                     },
                     {
                         "name":  "Monitoring export returns CSV when authenticated",
                         "method":  "GET",
                         "path":  "/api/monitoring/export?days=7",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "created_at,project_name,project_slug,status,triggered_by,commit_sha,deploy_url,error_message"
                     },
                     {
                         "name":  "Invoice pay unknown invoice returns not found",
                         "method":  "POST",
                         "path":  "/api/billing/invoices/00000000-0000-4000-8000-000000000001/pay",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "404",
+                        "actual":  "404",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "{\"error\":\"Invoice not found.\"}"
                     },
                     {
                         "name":  "Domain status unknown domain returns not found",
                         "method":  "POST",
                         "path":  "/api/domains/00000000-0000-4000-8000-000000000001/status",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "404",
+                        "actual":  "404",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "{\"error\":\"Domain not found.\"}"
                     },
                     {
                         "name":  "Domain dns-check unknown domain returns not found",
                         "method":  "POST",
                         "path":  "/api/domains/00000000-0000-4000-8000-000000000001/dns-check",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "404",
+                        "actual":  "404",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "{\"error\":\"Domain not found.\"}"
                     },
                     {
                         "name":  "Deployment status unknown id returns not found",
                         "method":  "GET",
                         "path":  "/api/deploy/00000000-0000-4000-8000-000000000001/status",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "404",
+                        "actual":  "404",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "{\"error\":\"Deployment not found.\"}"
                     },
                     {
                         "name":  "Logout after auth succeeds",
                         "method":  "POST",
                         "path":  "/api/auth/logout",
-                        "expected":  "n/a",
-                        "actual":  "skipped",
+                        "expected":  "200",
+                        "actual":  "200",
                         "pass":  true,
-                        "error":  "Authenticated session setup failed",
-                        "response":  ""
+                        "error":  null,
+                        "response":  "{\"ok\":true}"
                     }
                 ]
 }

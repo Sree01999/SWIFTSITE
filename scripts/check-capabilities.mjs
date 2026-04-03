@@ -3,6 +3,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const configPath = path.join(root, "src", "config", "capabilities.json");
+const releaseScopePath = path.join(root, "src", "config", "release-scope.json");
 const srcRoot = path.join(root, "src");
 
 function walk(dir, files = []) {
@@ -47,8 +48,12 @@ function fail(message) {
 if (!fs.existsSync(configPath)) {
   fail(`Missing ledger: ${path.relative(root, configPath)}`);
 }
+if (!fs.existsSync(releaseScopePath)) {
+  fail(`Missing release scope lock: ${path.relative(root, releaseScopePath)}`);
+}
 
 const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+const releaseScope = JSON.parse(fs.readFileSync(releaseScopePath, "utf8"));
 const capabilities = Array.isArray(config.capabilities) ? config.capabilities : [];
 if (!capabilities.length) {
   fail("Capability ledger is empty.");
@@ -76,6 +81,40 @@ for (const capability of capabilities) {
   }
 }
 
+const inScope = Array.isArray(releaseScope.inScope) ? releaseScope.inScope : [];
+const deferred = Array.isArray(releaseScope.deferred) ? releaseScope.deferred : [];
+const scopeIds = [...inScope, ...deferred];
+const scopeSet = new Set(scopeIds);
+
+if (!Array.isArray(inScope) || !Array.isArray(deferred)) {
+  fail("Release scope lock must include inScope[] and deferred[] arrays.");
+}
+if (scopeSet.size !== scopeIds.length) {
+  fail("Release scope lock contains duplicate capability ids.");
+}
+
+for (const lockedId of scopeSet) {
+  if (!idSet.has(lockedId)) {
+    fail(`Release scope references unknown capability id: ${lockedId}`);
+  }
+}
+
+for (const capabilityId of idSet) {
+  if (!scopeSet.has(capabilityId)) {
+    fail(
+      `Capability '${capabilityId}' is not mapped in release scope lock (inScope/deferred).`,
+    );
+  }
+}
+
+for (const capability of capabilities) {
+  if (inScope.includes(capability.id) && capability.status === "out_of_scope") {
+    fail(
+      `Capability '${capability.id}' is marked inScope but has status out_of_scope.`,
+    );
+  }
+}
+
 const files = walk(srcRoot);
 const usages = collectCapabilityUsages(files);
 
@@ -94,4 +133,6 @@ for (const capability of capabilities) {
   }
 }
 
-console.log(`[scope:check] OK. ${capabilities.length} capabilities validated.`);
+console.log(
+  `[scope:check] OK. ${capabilities.length} capabilities validated. Scope lock release: ${releaseScope.release}`,
+);

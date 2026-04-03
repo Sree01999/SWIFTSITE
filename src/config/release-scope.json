@@ -1,0 +1,28 @@
+{
+  "version": "2026-04-03",
+  "release": "mvp-operator-v1",
+  "lockEnabled": true,
+  "inScope": [
+    "auth-login",
+    "auth-register",
+    "auth-logout",
+    "clients-create",
+    "projects-create",
+    "deploy-trigger",
+    "deploy-abort",
+    "deploy-restart",
+    "monitoring-overview",
+    "domains-management",
+    "billing-checkout",
+    "nav-docs-link",
+    "nav-support-link"
+  ],
+  "deferred": [
+    "monitoring-export-csv",
+    "monitoring-detailed-analytics",
+    "monitoring-load-logs",
+    "dashboard-explore-api",
+    "dashboard-view-samples",
+    "nav-changelog-link"
+  ]
+}

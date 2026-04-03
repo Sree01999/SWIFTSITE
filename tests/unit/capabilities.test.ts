@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  capabilityReleaseScopeDecision,
   capabilityStatusClasses,
   capabilityStatusLabel,
   getCapability,
   getCapabilitySummary,
   getCapabilities,
+  getReleaseScopeSummary,
+  isCapabilityInCurrentRelease,
   isCapabilityEnabled,
 } from "@/lib/capabilities";
 
@@ -45,5 +48,26 @@ describe("capabilities", () => {
     expect(summary.mvpReady).toBeLessThanOrEqual(summary.mvpTotal);
     expect(summary.mvpProgress).toBeGreaterThanOrEqual(0);
     expect(summary.mvpProgress).toBeLessThanOrEqual(100);
+  });
+
+  it("returns release scope decisions for known capabilities", () => {
+    expect(capabilityReleaseScopeDecision("auth-login")).toBe("in_scope");
+    expect(capabilityReleaseScopeDecision("dashboard-view-samples")).toBe("deferred");
+    expect(capabilityReleaseScopeDecision("missing-capability-id")).toBeNull();
+  });
+
+  it("indicates if capability is part of current release", () => {
+    expect(isCapabilityInCurrentRelease("auth-login")).toBe(true);
+    expect(isCapabilityInCurrentRelease("dashboard-view-samples")).toBe(false);
+  });
+
+  it("returns release scope summary counts", () => {
+    const summary = getReleaseScopeSummary();
+    expect(summary.release).toBeTypeOf("string");
+    expect(summary.lockEnabled).toBe(true);
+    expect(summary.inScopeCount + summary.deferredCount).toBe(
+      getCapabilities().length,
+    );
+    expect(summary.deliveredEarly).toBeGreaterThanOrEqual(0);
   });
 });

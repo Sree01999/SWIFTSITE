@@ -23,6 +23,11 @@ This checklist is used before opening a PR.
 - `UT-DOM-002`: Verification token format is 16 hex chars.
 - `UT-DOM-003`: TXT verification value is generated correctly.
 
+### Security
+- `UT-SEC-001`: Rate limiter allows requests up to threshold.
+- `UT-SEC-002`: Rate limiter returns `limited=true` after threshold.
+- `UT-SEC-003`: Rate limiting is isolated by client IP.
+
 ## Integration test cases
 
 ### Deploy mock API
@@ -36,11 +41,25 @@ This checklist is used before opening a PR.
 - `IT-API-VAL-004`: `POST /api/domains` rejects invalid payload with `400`.
 - `IT-API-VAL-005`: `POST /api/billing/checkout` rejects invalid payload with `400`.
 
+### Dev endpoint guard
+- `IT-DEV-GUARD-001`: `GET /api/deploy/mock` returns `404` when production guard is active.
+- `IT-DEV-GUARD-002`: `POST /api/billing/invoices/[id]/pay` returns `404` when production guard is active.
+
 ## Commands to run
 
 ```bash
 pnpm test:unit
 pnpm test:integration
+pnpm qa:gate
+pnpm qa:heavy
 pnpm run lint
 pnpm run build
 ```
+
+## Authenticated heavy QA prerequisites
+
+- Add a stable confirmed QA account in Supabase Auth.
+- Set `QA_TEST_EMAIL` and `QA_TEST_PASSWORD` in `.env.local`.
+- Start app locally, then run `pnpm qa:heavy`.
+- Optional signup-rate-limit checks can be enabled with:
+  - `powershell -ExecutionPolicy Bypass -File scripts/qa-heavy-runtime.ps1 -BaseUrl http://localhost:3000 -IncludeSignupChecks`

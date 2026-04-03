@@ -1,5 +1,6 @@
 param(
-  [string]$BaseUrl = "http://localhost:3010"
+  [string]$BaseUrl = "http://localhost:3010",
+  [switch]$IncludeSignupChecks
 )
 
 $ErrorActionPreference = "Stop"
@@ -156,69 +157,34 @@ Invoke-QATest -Name "Monitoring export unauthorized rejected" -Method "GET" -Pat
 Invoke-QATest -Name "Stripe webhook missing config handled" -Method "POST" -Path "/api/stripe/webhook" -ExpectedStatus @(400, 503) -Body @{ id = "evt_test"; type = "checkout.session.completed"; data = @{ object = @{} } }
 
 # Authenticated tests
-$stamp = [DateTime]::UtcNow.ToString("yyyyMMddHHmmssfff")
-$qaEmail = "qa.$stamp@gmail.com"
-$qaPassword = "QaTest!2026"
-
-Invoke-QATest -Name "Register valid user" -Method "POST" -Path "/api/auth/register" -ExpectedStatus @(200, 400) -Body @{ email = $qaEmail; password = $qaPassword; name = "QA User $stamp" } -Validate {
-  param($status, $content, $headers)
-  if ($status -eq 200) { return $true }
-  return $content -match "rate limit"
-}
-Invoke-QATest -Name "Login unconfirmed user rejected" -Method "POST" -Path "/api/auth/login" -ExpectedStatus @(401) -Body @{ email = $qaEmail; password = $qaPassword }
-
 $envMap = Read-EnvLocal
 $confirmedLoginReady = $false
-$adminCreateReady = $false
-$confirmedEmail = "qa.confirmed.$stamp@gmail.com"
-$confirmedPassword = "QaTest!2026"
+$qaStableEmail = if ($envMap.ContainsKey("QA_TEST_EMAIL")) { $envMap["QA_TEST_EMAIL"] } else { $null }
+$qaStablePassword = if ($envMap.ContainsKey("QA_TEST_PASSWORD")) { $envMap["QA_TEST_PASSWORD"] } else { $null }
 
-if ($envMap.ContainsKey("NEXT_PUBLIC_SUPABASE_URL") -and $envMap.ContainsKey("SUPABASE_SERVICE_ROLE_KEY")) {
-  try {
-    $supabaseUrl = $envMap["NEXT_PUBLIC_SUPABASE_URL"].TrimEnd("/")
-    $serviceRole = $envMap["SUPABASE_SERVICE_ROLE_KEY"]
-    $adminHeaders = @{
-      "apikey" = $serviceRole
-      "Authorization" = "Bearer $serviceRole"
-      "Content-Type" = "application/json"
-    }
-    $adminBody = @{
-      email = $confirmedEmail
-      password = $confirmedPassword
-      email_confirm = $true
-      user_metadata = @{
-        full_name = "QA Confirmed User $stamp"
-      }
-    } | ConvertTo-Json -Compress -Depth 8
+if ($IncludeSignupChecks) {
+  $stamp = [DateTime]::UtcNow.ToString("yyyyMMddHHmmssfff")
+  $qaEmail = "qa.$stamp@gmail.com"
+  $qaPassword = "QaTest!2026"
 
-    $adminResp = Invoke-WebRequest -Uri "$supabaseUrl/auth/v1/admin/users" -Method "POST" -Headers $adminHeaders -Body $adminBody -ErrorAction Stop
-    $results.Add([pscustomobject]@{
-      name = "Admin create confirmed QA user"
-      method = "POST"
-      path = "supabase/auth/v1/admin/users"
-      expected = "200/201"
-      actual = [string][int]$adminResp.StatusCode
-      pass = (([int]$adminResp.StatusCode -eq 200) -or ([int]$adminResp.StatusCode -eq 201))
-      error = $null
-      response = "confirmed test user created"
-    })
-    $adminCreateReady = $true
+  Invoke-QATest -Name "Register valid user" -Method "POST" -Path "/api/auth/register" -ExpectedStatus @(200, 400) -Body @{ email = $qaEmail; password = $qaPassword; name = "QA User $stamp" } -Validate {
+    param($status, $content, $headers)
+    if ($status -eq 200) { return $true }
+    return $content -match "rate limit"
   }
-  catch {
-    Add-SkippedTest -Name "Admin create confirmed QA user" -Method "POST" -Path "supabase/auth/v1/admin/users" -Reason ("Admin user creation blocked: " + $_.Exception.Message)
-  }
-
-  if ($adminCreateReady) {
-    $loginConfirmed = Invoke-QATest -Name "Login confirmed user" -Method "POST" -Path "/api/auth/login" -ExpectedStatus @(200) -Body @{ email = $confirmedEmail; password = $confirmedPassword }
-    $confirmedLoginReady = $loginConfirmed.pass
-  }
-  else {
-    Add-SkippedTest -Name "Login confirmed user" -Method "POST" -Path "/api/auth/login" -Reason "No confirmed QA user available"
-  }
+  Invoke-QATest -Name "Login unconfirmed user rejected" -Method "POST" -Path "/api/auth/login" -ExpectedStatus @(401) -Body @{ email = $qaEmail; password = $qaPassword }
 }
 else {
-  Add-SkippedTest -Name "Admin create confirmed QA user" -Method "POST" -Path "supabase/auth/v1/admin/users" -Reason ".env.local missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
-  Add-SkippedTest -Name "Login confirmed user" -Method "POST" -Path "/api/auth/login" -Reason "No confirmed QA user available"
+  Add-SkippedTest -Name "Register valid user" -Method "POST" -Path "/api/auth/register" -Reason "Signup checks disabled by default (use -IncludeSignupChecks)"
+  Add-SkippedTest -Name "Login unconfirmed user rejected" -Method "POST" -Path "/api/auth/login" -Reason "Signup checks disabled by default (use -IncludeSignupChecks)"
+}
+
+if ($qaStableEmail -and $qaStablePassword) {
+  $loginConfirmed = Invoke-QATest -Name "Login QA operator user" -Method "POST" -Path "/api/auth/login" -ExpectedStatus @(200) -Body @{ email = $qaStableEmail; password = $qaStablePassword }
+  $confirmedLoginReady = $loginConfirmed.pass
+}
+else {
+  Add-SkippedTest -Name "Login QA operator user" -Method "POST" -Path "/api/auth/login" -Reason "Missing QA_TEST_EMAIL or QA_TEST_PASSWORD in .env.local"
 }
 
 if ($confirmedLoginReady) {

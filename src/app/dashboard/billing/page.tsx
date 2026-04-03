@@ -4,6 +4,7 @@ import { CapabilityPill } from "@/components/capability/capability-pill";
 import { BillingCheckoutPanel } from "@/components/dashboard/billing-checkout-panel";
 import { InvoicePayButton } from "@/components/dashboard/invoice-pay-button";
 import { getBillingEnv } from "@/lib/billing/env";
+import { isDevFeatureEnabled } from "@/lib/security/env";
 import { createClient } from "@/lib/supabase/server";
 
 type ClientRow = {
@@ -43,6 +44,7 @@ function invoiceStatusClasses(status: string) {
 export default async function BillingPage() {
   const supabase = await createClient();
   const billingEnv = getBillingEnv();
+  const devActionsEnabled = isDevFeatureEnabled();
 
   const [
     { data: clientsData, error: clientsError },
@@ -143,7 +145,7 @@ export default async function BillingPage() {
       </div>
 
       <BillingCheckoutPanel clients={clients} />
-      {!billingEnv.stripeEnabled ? (
+      {!billingEnv.stripeEnabled && devActionsEnabled ? (
         <div className="rounded-3xl border border-slate-200 bg-white px-6 py-5">
           <h2 className="text-3xl font-semibold text-[#1f2f39]">Dev payment actions</h2>
           <p className="mt-1 text-sm text-slate-600">
@@ -186,7 +188,7 @@ export default async function BillingPage() {
           <p className="text-sm text-slate-600">
             Build fees and maintenance billing records.
           </p>
-          {!billingEnv.stripeEnabled ? (
+          {!billingEnv.stripeEnabled && devActionsEnabled ? (
             <p className="mt-1 text-xs text-slate-500">
               In mock mode, use the Action column to click Mark Paid (Dev) for unpaid
               invoices.
@@ -212,7 +214,8 @@ export default async function BillingPage() {
                   invoice.status !== "paid" &&
                   invoice.status !== "void" &&
                   invoice.status !== "uncollectable";
-                const actionEnabled = isUnpaid && !billingEnv.stripeEnabled;
+                const actionEnabled =
+                  isUnpaid && !billingEnv.stripeEnabled && devActionsEnabled;
 
                 return (
                   <tr key={invoice.id} className="border-t border-slate-200">
@@ -248,6 +251,8 @@ export default async function BillingPage() {
                         <span className="text-xs text-slate-500">
                           {billingEnv.stripeEnabled
                             ? "Payment handled by Stripe"
+                            : !devActionsEnabled
+                              ? "Dev action disabled"
                             : isUnpaid
                               ? "No action"
                               : "Closed"}

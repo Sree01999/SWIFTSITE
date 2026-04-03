@@ -10,7 +10,9 @@
     "scope:check": "node scripts/check-capabilities.mjs",
     "test": "pnpm exec vitest run",
     "test:unit": "pnpm exec vitest run tests/unit",
-    "test:integration": "pnpm exec vitest run tests/integration"
+    "test:integration": "pnpm exec vitest run tests/integration",
+    "qa:heavy": "powershell -ExecutionPolicy Bypass -File scripts/qa-heavy-runtime.ps1 -BaseUrl http://localhost:3000",
+    "qa:gate": "pnpm test:unit && pnpm test:integration && pnpm scope:check && pnpm run lint && pnpm run build"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",

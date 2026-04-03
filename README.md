@@ -65,6 +65,9 @@ pnpm dev
 - Domain can remain temporary/test until professional domain cutover.
 - Keep all production secrets in Vercel environment variables, never in git.
 - Scope guard command: `pnpm scope:check`
+- Release QA gate: `pnpm qa:gate`
+- Heavy runtime QA: `pnpm qa:heavy`
+- Dev-only endpoints are blocked in production unless `ALLOW_DEV_ENDPOINTS=true`
 - Capability ledger docs: `docs/capability-ledger.md`
 - Pre-live cutover checklist: `docs/pre-live-cutover-checklist.md`
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { checkRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
 const resetSchema = z.object({
@@ -8,6 +9,18 @@ const resetSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const rate = checkRateLimit(request, {
+    scope: "auth-reset",
+    maxRequests: 6,
+    windowMs: 15 * 60 * 1000,
+  });
+  if (rate.limited) {
+    return NextResponse.json(
+      { error: "Too many reset requests. Please try again later." },
+      { status: 429, headers: rate.headers },
+    );
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = resetSchema.safeParse(body);
 

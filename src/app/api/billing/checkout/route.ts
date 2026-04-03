@@ -8,6 +8,7 @@ import {
   labelForChargeType,
 } from "@/lib/billing/constants";
 import { getBillingEnv } from "@/lib/billing/env";
+import { checkRateLimit } from "@/lib/security/rate-limit";
 import { createStripeCheckoutSession } from "@/lib/billing/stripe";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,6 +19,18 @@ const checkoutSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    const rate = checkRateLimit(request, {
+      scope: "billing-checkout",
+      maxRequests: 20,
+      windowMs: 10 * 60 * 1000,
+    });
+    if (rate.limited) {
+      return NextResponse.json(
+        { error: "Too many checkout attempts. Please try again shortly." },
+        { status: 429, headers: rate.headers },
+      );
+    }
+
     const body = await request.json().catch(() => null);
     const parsed = checkoutSchema.safeParse(body);
 

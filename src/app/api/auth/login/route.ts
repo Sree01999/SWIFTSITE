@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { checkRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
 const loginSchema = z.object({
@@ -9,6 +10,18 @@ const loginSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const rate = checkRateLimit(request, {
+    scope: "auth-login",
+    maxRequests: 12,
+    windowMs: 5 * 60 * 1000,
+  });
+  if (rate.limited) {
+    return NextResponse.json(
+      { error: "Too many login attempts. Please try again shortly." },
+      { status: 429, headers: rate.headers },
+    );
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = loginSchema.safeParse(body);
 

@@ -6,7 +6,7 @@ import {
   type StripeWebhookEvent,
   verifyStripeWebhookSignature,
 } from "@/lib/billing/stripe";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service";
 
 function asString(value: unknown) {
   return typeof value === "string" ? value : null;
@@ -38,7 +38,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid webhook event payload." }, { status: 400 });
   }
 
-  const supabase = await createClient();
+  let supabase;
+  try {
+    supabase = createServiceRoleClient();
+  } catch {
+    return NextResponse.json(
+      { error: "Supabase service role is not configured." },
+      { status: 503 },
+    );
+  }
   const { data: processed } = await supabase
     .from("processed_events")
     .select("id")
