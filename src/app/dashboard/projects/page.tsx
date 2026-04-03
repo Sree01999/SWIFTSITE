@@ -83,6 +83,20 @@ export default async function ProjectsPage() {
           <p className="mt-2 text-xl text-slate-600">
             Track build pipelines, deployment status, and project rollout health.
           </p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <Link
+              href="/dashboard/docs"
+              className="text-sm font-semibold text-[#0a6f87] hover:underline"
+            >
+              Deployment guide
+            </Link>
+            <Link
+              href="/dashboard/support"
+              className="text-sm font-semibold text-[#0a6f87] hover:underline"
+            >
+              Need help?
+            </Link>
+          </div>
         </div>
       </div>
       {clientsError ? (

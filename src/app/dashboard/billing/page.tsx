@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { CapabilityPill } from "@/components/capability/capability-pill";
 import { BillingCheckoutPanel } from "@/components/dashboard/billing-checkout-panel";
 import { InvoicePayButton } from "@/components/dashboard/invoice-pay-button";
@@ -81,6 +83,20 @@ export default async function BillingPage() {
         <p className="mt-2 text-xl text-slate-600">
           Revenue controls, invoice automation, and subscription lifecycle.
         </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <Link
+            href="/dashboard/docs"
+            className="text-sm font-semibold text-[#0a6f87] hover:underline"
+          >
+            Billing setup guide
+          </Link>
+          <Link
+            href="/dashboard/support"
+            className="text-sm font-semibold text-[#0a6f87] hover:underline"
+          >
+            Need help?
+          </Link>
+        </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <CapabilityPill capabilityId="billing-checkout" />
           <span

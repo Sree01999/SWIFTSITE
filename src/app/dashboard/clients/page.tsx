@@ -1,3 +1,4 @@
+﻿import Link from "next/link";
 import { NewClientForm } from "@/components/dashboard/new-client-form";
 import { StateBanner } from "@/components/ui/state-banner";
 import { createClient } from "@/lib/supabase/server";
@@ -280,13 +281,14 @@ export default async function ClientsPage() {
           limits, advanced edge caching strategies, or priority white-label
           deployment workflows for your larger clients.
         </p>
-        <button
-          type="button"
-          className="mt-4 text-base font-semibold text-[#0a6f87] hover:underline"
+        <Link
+          href="/dashboard/support"
+          className="mt-4 inline-block text-base font-semibold text-[#0a6f87] hover:underline"
         >
-          Contact Support →
-        </button>
+          Contact Support
+        </Link>
       </div>
     </section>
   );
 }
+

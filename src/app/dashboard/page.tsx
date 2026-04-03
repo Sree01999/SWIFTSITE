@@ -74,6 +74,39 @@ function extractDomain(project: ProjectRow) {
   return project.slug;
 }
 
+const onboardingChecklist = [
+  {
+    title: "Create your first client",
+    description: "Add client profile and contact details to start onboarding.",
+    href: "/dashboard/clients#new-client-form",
+    cta: "Open Clients",
+  },
+  {
+    title: "Create a project",
+    description: "Attach a project to that client so deployments and domains can be tracked.",
+    href: "/dashboard/projects",
+    cta: "Open Projects",
+  },
+  {
+    title: "Run first deployment",
+    description: "Trigger build/deploy from the project details page and watch status updates.",
+    href: "/dashboard/projects",
+    cta: "View Deployments",
+  },
+  {
+    title: "Connect domain and verify DNS",
+    description: "Add TXT/CNAME/A records, run DNS check, then verify SSL state.",
+    href: "/dashboard/docs",
+    cta: "Read Domain Steps",
+  },
+  {
+    title: "Enable billing workflow",
+    description: "Create setup fee and maintenance invoice for the client lifecycle.",
+    href: "/dashboard/billing",
+    cta: "Open Billing",
+  },
+];
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const startOfMonth = new Date();
@@ -375,6 +408,51 @@ export default async function DashboardPage() {
             <div className="mt-4 h-4 w-3/5 rounded-full bg-[#c7d8e3]" />
             <div className="mt-4 h-4 w-11/12 rounded-full bg-[#d5e1e9]" />
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-4xl font-semibold text-[#1f2f39]">
+              New agency onboarding checklist
+            </h2>
+            <p className="mt-1 text-base text-slate-600">
+              Follow these steps once to understand the full client workflow.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard/docs"
+              className="text-sm font-semibold text-[#0a6f87] hover:underline"
+            >
+              Open full docs
+            </Link>
+            <Link
+              href="/dashboard/support"
+              className="text-sm font-semibold text-[#0a6f87] hover:underline"
+            >
+              Need help?
+            </Link>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-2">
+          {onboardingChecklist.map((step, index) => (
+            <div
+              key={step.title}
+              className="rounded-2xl border border-slate-200 bg-[#f8fafc] p-4"
+            >
+              <p className="text-sm font-semibold text-[#0a6f87]">Step {index + 1}</p>
+              <p className="mt-1 text-lg font-semibold text-slate-800">{step.title}</p>
+              <p className="mt-1 text-sm text-slate-600">{step.description}</p>
+              <Link
+                href={step.href}
+                className="mt-3 inline-block text-sm font-semibold text-[#0a6f87] hover:underline"
+              >
+                {step.cta}
+              </Link>
+            </div>
+          ))}
         </div>
       </section>
     </section>
